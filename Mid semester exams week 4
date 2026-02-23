@@ -1,0 +1,48 @@
+File storage logic(FileHandler.h)
+
+#include <fstream>
+#include <vector>
+#include <sstream>
+#include "Student.h"
+
+class FileHandler {
+public:
+    // Save all students to students.txt [Requirement 5.4]
+    static void saveStudents(const std::vector<Student>& students) {
+        std::ofstream outFile("students.txt");
+        for (const auto& s : students) {
+            outFile << s.getIndexNumber() << "," << s.getName() << "\n";
+        }
+        outFile.close();
+    }
+
+    // Load students from file [Requirement 5.4]
+    static void loadStudents(std::vector<Student>& students) {
+        std::ifstream inFile("students.txt");
+        std::string line, id, name;
+        while (std::getline(inFile, line)) {
+            std::stringstream ss(line);
+            std::getline(ss, id, ',');
+            std::getline(ss, name);
+            students.push_back(Student(name, id));
+        }
+        inFile.close();
+    }
+};
+
+
+// In main.cpp or within AttendanceSession class
+void saveSessionToFile() {
+    // Generate filename based on course code and date [Requirement 7]
+    std::string filename = "session_" + courseCode + "_" + date + ".txt";
+    std::ofstream outFile(filename);
+    
+    outFile << "Course: " << courseCode << "\nDate: " << date << "\n";
+    outFile << "------------------------------------------\n";
+    for (auto const& [id, status] : attendanceMap) {
+        outFile << id << ": " << status << "\n";
+    }
+    outFile.close();
+    std::cout << "Session saved to " << filename << std::endl;
+}
+
